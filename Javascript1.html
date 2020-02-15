@@ -1,0 +1,57 @@
+<html>
+
+<head>
+    <style>
+        .cabecalho-off {
+            background-color: black;
+            color: white;
+        }
+
+        .cabecalho-on {
+            background-color: white;
+            color: black;
+        }
+    </style>
+    <script>
+        function alerta() {
+            alert('Hello World!');
+        }
+
+        var soma = (n1, n2) => { n1 + n2 };
+
+        function modificaHeader() {
+            alert(soma(2,5));
+            // arrow function
+            setTimeout(() => {
+                const header = document.getElementById("cabecalho");
+                if (header) {
+                    header.innerHTML = "";
+                    const p = document.createElement("p");
+                    const texto = document.createTextNode("texto");
+                    p.appendChild(texto);
+                    header.appendChild(p);
+                    if (header.className == "cabecalho-on")
+                        header.className = "cabecalho-off";
+                    else
+                        header.className = "cabecalho-on";
+                }
+            }, 5000);
+        }
+    </script>
+</head>
+
+<body>
+    <header id="cabecalho">
+        Cabeçalho
+    </header>
+    <div id="conteudo">
+        Conteúdo
+    </div>
+    <div>
+        <label>Nome</label>
+        <input type="text"></input>
+    </div>
+    <button onclick="modificaHeader()">Alerta</button>
+</body>
+
+</html>
