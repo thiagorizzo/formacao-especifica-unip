@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+        <style>
+            #acoes {
+                margin-top: 30px;
+            }
+
+            .selecionado {
+                background-color: darkorange;
+                font-weight: bold;
+            }
+        </style>
+
+        <script>
+            var selecionado = null;
+
+            function remover() {
+                if (selecionado == null)
+                    alert("Por favor, selecione um filme.");
+
+                // TODO: continuar
+                document.removeChild(selecionado);
+            }
+
+            function selecionar(elemento) {
+                // old selecionado
+                if (selecionado != null)
+                    selecionado.className = "";
+
+                // atualizo selecionado
+                selecionado = elemento;
+
+                // modifico class do novo selecionado
+                elemento.className = "selecionado";
+            }
+
+            // Ajax ->
+            function buscar() {
+                var xhttp = new XMLHttpRequest();
+                
+                xhttp.open('GET', 'https://ghibliapi.herokuapp.com/films', true);
+
+                // subscribe / Callback
+                xhttp.onload = httpOnLoad;
+
+                xhttp.send();
+                
+                var resultados = document.getElementById("resultados");
+                resultados.innerHTML = '<img src="loading.gif">';
+            }
+
+            function httpOnLoad() {
+
+                var response = this.response;
+                var status = this.status;
+
+                setTimeout(function() {
+                    // converte uma string no formato JSON em objeto Javascript
+                    var data = JSON.parse(response);
+
+                    if (status >= 200 && status < 400) {
+                        var resultados = document.getElementById("resultados");
+
+                        var tbody = '';
+
+                        // percorre cada um dos filmes
+                        data.forEach(function(element) {
+                            tbody += `
+                                <tr onclick="selecionar(this)" id='${element.id}'>
+                                    <td>${element.id}</td>
+                                    <td>${element.title}</td>
+                                    <td>${element.director}</td>
+                                    <td>${element.producer}</td>
+                                    <td>${element.release_date}</td>
+                                    <td>${element.rt_score}</td>
+                                </tr>
+                            `;
+                        });
+
+                        resultados.innerHTML = `
+                            <div id="acoes">
+                                <button class="btn btn-primary" onclick="novo()">Novo</button>
+                                <button class="btn btn-primary" onclick="atualizar()">Atualizar</button>                            
+                                <button class="btn btn-danger" onclick="remover()">Remover</button>
+                            </div>
+                            <table class='table'>
+                                <thead>
+                                    <tr>
+                                        <th>id</th>
+                                        <th>title</th>
+                                        <th>director</th>
+                                        <th>producer</th>
+                                        <th>release date</th>
+                                        <th>rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${tbody}
+                                </tbody>
+                            </table>
+                        `;
+                    }
+                }, 3000);
+            }
+
+        </script>
+    </head>
+    <body>
+        <div>
+            <button class="btn btn-primary" onclick="buscar()">Buscar</button>
+        </div>
+
+
+        <div id="resultados">
+        </div>
+    </body>
+</html>
