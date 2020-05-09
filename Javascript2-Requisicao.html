@@ -12,17 +12,52 @@
                 background-color: darkorange;
                 font-weight: bold;
             }
+
+            img { 
+                width: 100px;
+                height: 100px;
+            }
         </style>
 
         <script>
+
             var selecionado = null;
 
-            function remover() {
-                if (selecionado == null)
-                    alert("Por favor, selecione um filme.");
+            window.onload = function() {
+                var form = document.getElementById("form");
+                form.style.display = "none";
+            };
 
-                // TODO: continuar
-                document.removeChild(selecionado);
+            function novo() {
+                var form = document.getElementById("form");
+                form.style.display = "block";
+            }
+
+            function confirmar() {
+                var codigo = document.getElementById("codigo").value;
+                var nome = document.getElementById("nome").value;
+                var descricao = document.getElementById("descricao").value;
+                var preco = document.getElementById("preco").value;
+                var avaliacao = document.getElementById("avaliacao").value;
+
+                // JSON -> objeto javascript
+                var data = {
+                    'codigo': codigo,
+                    'nome': nome,
+                    'descricao': descricao,
+                    'preco': preco,
+                    'avaliacao': avaliacao
+                };
+
+                var xhttp = new XMLHttpRequest();
+
+                xhttp.open('POST', 'http://localhost:8888/Produtos', true);
+                xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+                // subscribe / Callback
+                xhttp.onload = httpOnLoad;
+
+                xhttp.send(JSON.stringify(data));
             }
 
             function selecionar(elemento) {
@@ -41,7 +76,7 @@
             function buscar() {
                 var xhttp = new XMLHttpRequest();
                 
-                xhttp.open('GET', 'https://ghibliapi.herokuapp.com/films', true);
+                xhttp.open('GET', 'http://localhost:8888/Produtos', true);
 
                 // subscribe / Callback
                 xhttp.onload = httpOnLoad;
@@ -51,6 +86,21 @@
                 var resultados = document.getElementById("resultados");
                 resultados.innerHTML = '<img src="loading.gif">';
             }
+
+            function remover() {
+                if (selecionado == null)
+                    alert("Por favor, selecione um filme.");
+
+                var xhttp = new XMLHttpRequest();
+                
+                xhttp.open('DELETE', `http://localhost:8888/Produtos/${selecionado.id}`, true);
+
+                // subscribe / Callback
+                xhttp.onload = httpOnLoad;
+
+                xhttp.send();
+                resultados.innerHTML = '<img src="loading.gif">';
+            }            
 
             function httpOnLoad() {
 
@@ -69,13 +119,13 @@
                         // percorre cada um dos filmes
                         data.forEach(function(element) {
                             tbody += `
-                                <tr onclick="selecionar(this)" id='${element.id}'>
-                                    <td>${element.id}</td>
-                                    <td>${element.title}</td>
-                                    <td>${element.director}</td>
-                                    <td>${element.producer}</td>
-                                    <td>${element.release_date}</td>
-                                    <td>${element.rt_score}</td>
+                                <tr onclick="selecionar(this)" id='${element.codigo}'>
+                                    <td>${element.codigo}</td>
+                                    <td>${element.nome}</td>
+                                    <td>${element.preco}</td>
+                                    <td>${element.descricao}</td>
+                                    <td>${element.avaliacao}</td>
+                                    <td><img src='${element.imagemUrl}'/></td>
                                 </tr>
                             `;
                         });
@@ -89,12 +139,12 @@
                             <table class='table'>
                                 <thead>
                                     <tr>
-                                        <th>id</th>
-                                        <th>title</th>
-                                        <th>director</th>
-                                        <th>producer</th>
-                                        <th>release date</th>
-                                        <th>rate</th>
+                                        <th>codigo</th>
+                                        <th>nome</th>
+                                        <th>preco</th>
+                                        <th>descricao</th>
+                                        <th>avaliacao</th>
+                                        <th>imagem</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -103,7 +153,7 @@
                             </table>
                         `;
                     }
-                }, 3000);
+                }, 1000);
             }
 
         </script>
@@ -113,6 +163,35 @@
             <button class="btn btn-primary" onclick="buscar()">Buscar</button>
         </div>
 
+        <div id="form">
+            <div class="form-group">
+                <label>Código</label>
+                <input type="text" name="codigo" id="codigo" />
+            </div>
+
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" name="nome" id="nome"/>
+            </div>
+
+            <div class="form-group">
+                <label>Preco</label>
+                <input type="number" name="preco" id="preco"/>
+            </div>
+            
+            <div class="form-group">
+                <label>Descricao</label>
+                <textarea name="descricao" id="descricao"></textarea>
+            </div>     
+            
+            <div class="form-group">
+                <label>Avaliacao</label>
+                <input type="number" name="avaliacao" id="avaliacao"/>
+            </div>             
+
+            <button class="btn btn-primary" id="confirmar" onclick="confirmar()">Confirmar</button>
+            <button class="btn btn-danger" id="cancelar" onclick="cancelar()">Cancelar</button>
+        </div>
 
         <div id="resultados">
         </div>
