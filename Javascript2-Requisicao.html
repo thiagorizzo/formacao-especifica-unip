@@ -20,7 +20,7 @@
         </style>
 
         <script>
-
+            var apiUrl = "https://localhost:44307/api";
             var selecionado = null;
 
             window.onload = function() {
@@ -51,7 +51,7 @@
 
                 var xhttp = new XMLHttpRequest();
 
-                xhttp.open('POST', 'http://localhost:8888/Produtos', true);
+                xhttp.open('POST', `${apiUrl}/produtos`, true);
                 xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
                 // subscribe / Callback
@@ -76,7 +76,7 @@
             function buscar() {
                 var xhttp = new XMLHttpRequest();
                 
-                xhttp.open('GET', 'http://localhost:8888/Produtos', true);
+                xhttp.open('GET', `${apiUrl}/produtos`, true);
 
                 // subscribe / Callback
                 xhttp.onload = httpOnLoad;
@@ -93,7 +93,7 @@
 
                 var xhttp = new XMLHttpRequest();
                 
-                xhttp.open('DELETE', `http://localhost:8888/Produtos/${selecionado.id}`, true);
+                xhttp.open('DELETE', `${apiUrl}/produtos/${selecionado.id}`, true);
 
                 // subscribe / Callback
                 xhttp.onload = httpOnLoad;
